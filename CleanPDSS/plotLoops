@@ -1,0 +1,58 @@
+#!/bin/bash
+# plotLoops  vers. 0.9  local (in this folder) command script to 
+#             plot the outputs from pdStressStrain.f  program
+#Usage e.g.:  ./plotLoops loopSetA  loopSetB
+#             creates:  loopSetA+loopSetB.png
+#  e.g.:   ./plotLoops  loops.01 loops.11
+
+# Programs also needed:  gnuplot,  delete1arg, (maybe: htmldoc)
+
+#  Copyright (C) 2015  Al Conle
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the license, or (at
+# your option) any later version.
+#  This  file is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTA-
+# BILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+# License for more details.
+#  You should have received a copy of the GNU General PUblic License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place -Suite 330, Boston, MA 02111-1307, USA. Try also their
+# web site: http://www.gnu.org/copyleft/gpl.html
+
+#HTML=tempHTML$$
+#TMP2=/tmp/temp222.$$
+
+
+
+#Create the gnuplot load file
+   echo "set term pngcairo size 600,400 font \"Palatino-Bold,14\""  >loadgp6
+    echo "set output \"$1+$2.png\" "              >> loadgp6
+#    echo "set size 1.0,1.0 "                   >> loadgp6
+#    echo "set multiplot "                      >> loadgp6
+#    echo "set size 1.0,0.5 "                   >> loadgp6
+#    echo "set origin 0.0,0.5 "                 >> loadgp6
+#    echo "set origin 0.92,0.5 "                 >> loadgp6
+#    grep \#SEGMENT= >titleOut
+#    echo "set title \"$1 $2 \" "                  >> loadgp6
+    echo "set grid"                            >> loadgp6
+    echo "set key bottom   "                   >> loadgp6
+#    echo "set y2tics"                          >> loadgp6
+    echo "set xlabel \"Strain\" "               >> loadgp6
+    echo "set xrange [-0.012:0.012] "           >> loadgp6
+    echo "set yrange [-450:+450]"               >> loadgp6
+
+    echo "set ylabel \"Stress, mpa\" "          >> loadgp6
+#    echo "set y2label \"Fraction Solid\" "     >> loadgp6
+#    echo "set y2range [500:800.] "            >> loadgp6
+#    echo "set format y2 \"%f\"  "            >> loadgp6
+
+    echo "plot \"$1\"  u 1:2 w lp lc rgb \"red\", \\"       >>loadgp6
+    echo "\"$2\" u 1:2 w lp lc rgb \"blue\"       "        >>loadgp6
+    gnuplot "loadgp6"
+
+    xv "$1+$2".png  &
+
+    exit
+

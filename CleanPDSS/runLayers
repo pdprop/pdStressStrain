@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# runLayers    Script to run all user layers
+# Usage:    ./runLayers  strainsFile
+echo "# runLayers Usage:   ./runLayers  strainsFile"
+
+#  Copyright (C) 2015  Al Conle
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the license, or (at
+# your option) any later version.
+#  This  file is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTA-
+# BILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+# License for more details.
+#  You should have received a copy of the GNU General PUblic License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place -Suite 330, Boston, MA 02111-1307, USA. Try also their
+# web site: http://www.gnu.org/copyleft/gpl.html
+
+#Using pdStressStrain:
+#gfortran -g -w -fbounds-check pdStressStrain.f -o pdStressStrain
+# Usage:   pdStressStrain  emMag  ebMag  <loadHistory >outputFile
+
+#ebMag= 1.0     # Bending strain magnification
+./pdStressStrain 1.0  1.0 < "$1" > layerEdge.01
+grep \#plotloops layerEdge.01 | delete1arg > loops.01
+#grep 2505 loops.01 > wave1
+#grep 2515 loops.01 >> wave1
+#grep 2528 loops.01 >> wave1
+
+#Run the other layers:
+./pdStressStrain 1.0  0.8 < "$1" > layerEdge.02
+grep \#plotloops layerEdge.02 | delete1arg > loops.02
+./pdStressStrain 1.0  0.6 < "$1" > layerEdge.03
+grep \#plotloops layerEdge.03 | delete1arg > loops.03
+./pdStressStrain 1.0  0.4 < "$1" > layerEdge.04
+grep \#plotloops layerEdge.04 | delete1arg > loops.04
+./pdStressStrain 1.0  0.2 < "$1" > layerEdge.05
+grep \#plotloops layerEdge.05 | delete1arg > loops.05
+#Middle layer edge:
+./pdStressStrain 1.0  0.0 < "$1" > layerEdge.06
+grep \#plotloops layerEdge.06 | delete1arg > loops.06
+
+./pdStressStrain 1.0 -0.2 < "$1" > layerEdge.07
+grep \#plotloops layerEdge.07 | delete1arg > loops.07
+./pdStressStrain 1.0 -0.4 < "$1" > layerEdge.08
+grep \#plotloops layerEdge.08 | delete1arg > loops.08
+./pdStressStrain 1.0 -0.6 < "$1" > layerEdge.09
+grep \#plotloops layerEdge.09 | delete1arg > loops.09
+./pdStressStrain 1.0 -0.8 < "$1" > layerEdge.10
+grep \#plotloops layerEdge.10 | delete1arg > loops.10
+
+./pdStressStrain 1.0 -1.0 < "$1" > layerEdge.11
+grep \#plotloops layerEdge.11 | delete1arg > loops.11
+#grep 2505 ptempR > wave1R
+#grep 2515 ptempR >> wave1R
+#grep 2528 ptempR >> wave1R
+
+./plotLoops loops.01 loops.11
+./plotLoops loops.02 loops.10
+./plotLoops loops.03 loops.09
+./plotLoops loops.04 loops.08
+./plotLoops loops.05 loops.07
+./plotLoops loops.06 loops.06
+
+
+#gnuplot> plot "ptemp" u 1:2 w lp, "wave1" u 1:2 w lp lc 3, "ptempR" u 1:2 w lp lc 30, "wave1R" u 1:2 w lp lc 3
+

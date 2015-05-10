@@ -1,0 +1,257 @@
+# pdStressStrain.f vers. 1.0
+#Usage: pdStressStrain  emScale ebScale  <histfile  >outfile
+
+ #emMag=    1.0000000    
+ #ebMag=    1.0000000    
+#Opening pdss.env file...
+# This file contains the starting filenames, variables etc
+# for the pdStressStrain.f  programs.
+# I'm debating placing this stuff in the mainline. -but perhaps there
+# are future considerations for keeping this.
+#
+# Mostly, right now, it would be used to globally scale the strains
+# using the MAGFACTORs and the MEANADDs.
+# Although each run of pdStressStrain  also includes mag. factors.
+# Other critical items,  such as MATERIAL  file is read from the
+# segment's strain log file.
+#found: #TYPE= CoiledTube
+#           # Adjustments to load file variables:
+#           # Note that the MEANADD (below) is added AFTER the MAGFACTOR is applied.
+#found: #MAGFACTOR_m=  0.1000000E+01
+#found: #MAGFACTOR_b=  0.1000000E+01
+#found: #MEANADD_m=  0.0000000E+00
+#found: #MEANADD_b=  0.0000000E+00
+#found: #MAXREPS=          1
+#                     # One repetition or application of the load history is
+#                     # also called a "block" of cycles.
+#
+#found: #SAVELEVEL=  2
+#                            #   3=lots  2=medium  1=minimal
+#                            #      Use for large output files with lots of cycles.
+# Getting Strain history file from std.input 
+#ID= XYZ5134
+#MATERIAL= merged3_SAE950X_fitted.html
+#SEGMENT=       1030
+#history.adj           0.000  0.00000  0.00000  0.00000    0.0  -1030.0  102.   72.  101.   73.
+#history.adj         598.000  0.00000  0.00000  0.00000    0.0  -1030.0  102.   72.  101.   73.
+#history.adj         601.000  0.00000  0.00800  0.00800    0.0  -1030.0  102.   72.  101.   73.
+#history.adj         999.000  0.00000  0.00800  0.00800    0.0  -1030.0  102.   72.  101.   73.
+#history.adj        1000.100  0.00000  0.00800  0.00800   70.0  -1030.0  102.   72.  101.   73.
+#history.adj        1298.000  0.00000  0.00800  0.00800   70.0  -1030.0  102.   72.  101.   73.
+#history.adj        1300.020  0.00000  0.00800  0.00800    0.0  -1030.0  102.   72.  101.   73.
+#history.adj        1598.000  0.00000  0.00800  0.00800    0.0  -1030.0  102.   72.  101.   73.
+#history.adj        1598.116  0.00000  0.00795  0.00795    0.0  -1030.0  102.   72.  101.   73. #an insert
+#history.adj        1600.320  0.00100  0.00800  0.00900    0.0  -1030.0  102.   72.  101.   73.
+#history.adj        2048.000  0.00100  0.00000  0.00100    0.0  -1030.0  102.   72.  101.   73.
+#history.adj        2050.000  0.00100  0.00000  0.00100    0.0     10.0  102.   72.  101.   73.
+#history.adj        2054.500  0.00100  0.00000  0.00100    0.0     54.5  102.   72.  101.   73.
+#history.adj        2055.070  0.00100  0.01000  0.01100    0.0     55.0  102.   72.  101.   73.
+#history.adj        2061.500  0.00100  0.01000  0.01100    0.0     71.5  102.   72.  101.   73.
+#history.adj        2062.190  0.00100  0.00000  0.00100    0.0     72.0  102.   72.  101.   73.
+#history #Data input completed. nloads=    16
+#history #etotMax= 0.01100
+#history #etotMin= 0.00000
+#history #Where etot = emembrane + ebending
+
+
+#version= 1.0  readStrainLifeStress.f starts...
+#<html><title>SAE Standard Fatigue Data File format</title><body>
+#<FORM METHOD="POST" ACTION="http://mme.uwaterloo.ca/cgi-bin/catgnume">
+#<DL compact> Pick one:
+#<input type="radio" name="#saeinput" value="FDE_plot" >FDE_plot
+#<input type="radio" name="#saeinput" value="FDE_fit"  checked >FDE_fit
+#<input type="submit" value="Send for processing">
+#<br><pre><textarea rows=50 cols=90 name="SAE_Standard_File" >
+#
+#Copyright (C) 2015  F.D.E. Committee
+#This data file is free software - you can redistribute it and/or
+#modify it under the terms of the GNU General Public License as
+#published by the Free Software Foundation; either version 2 of the
+#license, or (at your option) any later version.
+#This data file is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY - without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General PUblic License for more details.
+#You should have received a copy of the GNU General PUblic License
+#along with this program - if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+#Try also their web site: http://www.gnu.org/copyleft/gpl.html
+#
+# SAE950X 8mm and 10mm thick plates + QStE380 (SAE950XLK) 3mm sheet
+# See individual files for details:
+# Ref.1: P.Watson and T.H.Topper, "An Evaluation of the Fatigue Performance
+# of Automotive Steels," SAE Paper 710597, Montreal Que.,  Jun.7-11 1971
+# Ref.2: P.Dindinger report to Fat.Des.+Eval. Comm. 1995
+# Ref.3: L.DePrada, et al, "Fatigue Behaviour of High Strength Steel Sheets
+# Used in Automotive Industry," Fatigue 2007.
+# Data digitized from graphs and may contain errors.
+#saedigcurve_v2.2.f starts.
+#
+#FileType= strain_life
+#DataType= fitted
+#TIMEcol= 0
+#NAME=  SAE950X
+#NAME=  HSLA-345
+#NAME= QStE380  (possiby not a 950X)
+#NAME=  Steel
+#Stress_units= mpa
+#Strain_units= strain
+#Sy= 432   ave. of 345. (50ksi) 437.(63) 516. (74)
+#Su= 496   ave. of 441. 485. 562
+#eu=     0.14  (engineering strain at Su  from Watson)
+#E= 203000   ave. of204220.  204700 200100
+#FractureStrain= 1.01  ave. of 1.06  1.16
+#FractureStress=  751.
+#monotonic_K= 0  not reported
+#monotonic_n= 0  not reported
+#BHN= 140. 170.
+#%RA= 65. % 68.5
+#SAE950X    HSLA-345   BHN=  140 Fn=    0
+##         Monotonic Props.       Cyclic Props.
+#ELAS. MOD.= 29443. KSI,  203. GPA     K'        = 133.2 KSI,   918.MPA
+#YIELD,0.2%=    63. KSI,  432. MPA     N'        = 0.1451
+#ULT. STRG.=    72. KSI,  496. MPA     F. STRG COEF=  107.9 KSI,  744.MPA
+#K       =      0.0 KSI,      0. MPA   F.STRG EXP, b=-0.0724
+#N            = 0.0000                 FAT DUCT COEF=   0.2342
+#RED. IN AREA = 65.0                   F.DUCT EXP, c=-0.4990
+#T. FRAC. STG.= 108.9 KSI,  751. MPA   Exp Cyc Yld  =   54. Ksi, 373.MPA
+#T. FRAC. STR.= 1.010                  Fit Cyc Yld  =   51. Ksi, 350.MPA
+#No. fatigue data points=   56
+#
+# NOTE!! The Following Points are <b>FITTED DATA:</b>#NOTE!! Fitted Stress computed using Experm. K' and n'
+#Stress_Units= MPa
+#TotStrAmp   2Nf  StsAmp So PlsStr   IniMod NeubEqvStsAmpl
+ #CHECK THESE :
+ #Stress_units=MPa        Strain_units=strain     Life_units=reversals 
+ #EMOD=   203000.00      Sult=   496.00000      Syield=   432.00000      %RA=   65.000000      Fracture_Stress=   751.00000      Fracture_Strain=   1.0100000    
+ #BHN=         140
+ #Material file: Reversals -> Cycles
+ #Took SigmaF_primed value =   751.00000      at N=0.5
+ #Took Frac.Strain value =   1.0100000      at N=0.5
+#xcalc1 Strain_Amp     Cycles  Stress_Amp  Elas_Str_Amp  Plas_Str_Amp  Smax*Str_Amp  Snominal_Amp
+#xcalc1  1.01000         0.5  751.0  0.00370  1.00630  0.7585100E+03     1.0
+#xcalc1  0.01914       320.0  421.6  0.00208  0.01706  0.8069424E+01     0.0
+#xcalc1  0.00968      1150.0  393.6  0.00194  0.00774  0.3810048E+01     0.0
+#xcalc1  0.00739      2000.0  382.1  0.00188  0.00551  0.2823719E+01     0.0
+#xcalc1  0.00532      4000.0  367.4  0.00181  0.00351  0.1954568E+01     0.0
+#xcalc1  0.00424      7500.0  356.6  0.00176  0.00248  0.1511984E+01     0.0
+#xcalc1  0.00346     12000.0  346.0  0.00170  0.00176  0.1197160E+01     0.0
+#xcalc1  0.00273     25000.0  332.1  0.00164  0.00109  0.9066330E+00     0.0
+#xcalc1  0.00234     40000.0  321.5  0.00158  0.00076  0.7523100E+00     0.0
+#xcalc1  0.00204     82000.0  310.8  0.00153  0.00051  0.6340320E+00     0.0
+#xcalc1  0.00175    200000.0  296.1  0.00146  0.00029  0.5181750E+00     0.0
+#xcalc1  0.00158    500000.0  284.3  0.00140  0.00018  0.4491940E+00     0.0
+#xcalc1  0.00145   1200000.0  271.9  0.00134  0.00011  0.3942550E+00     0.0
+#xcalc1  0.00131   7500000.0  254.6  0.00125  0.00006  0.3335260E+00     0.0
+#xcalc1  0.00131  10000000.0  254.6  0.00125  0.00006  0.3335260E+00     0.0
+#Warning: Same target as previous lobj90=ldo90  at nrev=        0 nblk=        1 nact=        1
+# Skipping this stress...
+        0.000 0.00000 0.00000 0.00000   0.0  -1030. 0.00000 0.00000    0.0  0.0000000E+00 #nullrev
+#plotloops 0.00000    0.0         0.000
+#Warning: Same target as previous lobj90=ldo90  at nrev=        0 nblk=        1 nact=        2
+# Skipping this stress...
+      598.000 0.00000 0.00000 0.00000   0.0  -1030. 0.00000 0.00000    0.0  0.0000000E+00 #nullrev
+#plotloops 0.00000    0.0       598.000
+ #plotloops    0.0000000       0.0000000       601.00000000000000     
+      601.000 0.00000 0.00800 0.00800   0.0  -1030. 0.00800 0.00000    0.0  0.0000000E+00 #Target
+#plotloops  0.00131  254.6       601.000
+#plotloops  0.00131  254.6       601.000
+#plotloops  0.00145  271.9       601.000
+#plotloops  0.00158  284.3       601.000
+#plotloops  0.00175  296.1       601.000
+#plotloops  0.00204  310.8       601.000
+#plotloops  0.00234  321.5       601.000
+#plotloops  0.00273  332.1       601.000
+#plotloops  0.00346  346.0       601.000
+#plotloops  0.00424  356.6       601.000
+#plotloops  0.00532  367.4       601.000
+#plotloops  0.00739  382.1       601.000
+#plotloops  0.00800  385.4       601.000
+ #plotloops #StrOut, StsOut=   8.00000038E-03   385.44385    
+#Warning: Same target as previous lobj90=ldo90  at nrev=        1 nblk=        1 nact=        4
+# Skipping this stress...
+      999.000 0.00000 0.00800 0.00800   0.0  -1030. 0.00800 0.00800  385.4  0.0000000E+00 #nullrev
+#plotloops 0.00800  385.4       999.000
+#Warning: Same target as previous lobj90=ldo90  at nrev=        1 nblk=        1 nact=        5
+# Skipping this stress...
+     1000.100 0.00000 0.00800 0.00800  70.0  -1030. 0.00800 0.00800  385.4  0.0000000E+00 #nullrev
+#plotloops 0.00800  385.4      1000.100
+#Warning: Same target as previous lobj90=ldo90  at nrev=        1 nblk=        1 nact=        6
+# Skipping this stress...
+     1298.000 0.00000 0.00800 0.00800  70.0  -1030. 0.00800 0.00800  385.4  0.0000000E+00 #nullrev
+#plotloops 0.00800  385.4      1298.000
+#Warning: Same target as previous lobj90=ldo90  at nrev=        1 nblk=        1 nact=        7
+# Skipping this stress...
+     1300.020 0.00000 0.00800 0.00800   0.0  -1030. 0.00800 0.00800  385.4  0.0000000E+00 #nullrev
+#plotloops 0.00800  385.4      1300.020
+#Warning: Same target as previous lobj90=ldo90  at nrev=        1 nblk=        1 nact=        8
+# Skipping this stress...
+     1598.000 0.00000 0.00800 0.00800   0.0  -1030. 0.00800 0.00800  385.4  0.0000000E+00 #nullrev
+#plotloops 0.00800  385.4      1598.000
+     1598.116 0.00000 0.00795 0.00795   0.0  -1030. 0.00795 0.00800  385.4  0.0000000E+00 #Target
+ #dbug:so90,de90ampl:    385.44385      2.49999575E-05
+ #getSwatl:  9.63607989E-03  -10000000.       1598.1159667968750     
+#plotloops  0.00795  375.7      1598.116
+     1600.320 0.00100 0.00800 0.00900   0.0  -1030. 0.00900 0.00795  375.7  0.0000000E+00 #Target
+ #getSwatl:  9.63607989E-03  -10000000.       1600.3199999999999     
+#plotloops  0.00800  385.4      1600.320
+#plotloops  0.00900  390.5      1600.320
+ #plotloops #StrOut, StsOut=   8.99999868E-03   390.46323    
+     2048.000 0.00100 0.00000 0.00100   0.0  -1030. 0.00100 0.00900  390.5  0.0000000E+00 #Target
+ #dbug:so90,de90ampl:    390.46323      4.00000066E-03
+ #getSwatl:   1.5618532       6927.1826       2048.0000000000000     
+#plotloops  0.00638 -118.7      2048.000
+#plotloops  0.00638 -118.7      2048.000
+#plotloops  0.00610 -153.3      2048.000
+#plotloops  0.00584 -178.1      2048.000
+#plotloops  0.00550 -201.7      2048.000
+#plotloops  0.00492 -231.1      2048.000
+#plotloops  0.00432 -252.5      2048.000
+#plotloops  0.00354 -273.7      2048.000
+#plotloops  0.00208 -301.5      2048.000
+#plotloops  0.00100 -316.6      2048.000
+#Warning: Same target as previous lobj90=ldo90  at nrev=        4 nblk=        1 nact=       12
+# Skipping this stress...
+     2050.000 0.00100 0.00000 0.00100   0.0     10. 0.00100 0.00100 -316.6  0.2887177E-03 #nullrev
+#plotloops 0.00100 -316.6      2050.000
+#Warning: Same target as previous lobj90=ldo90  at nrev=        4 nblk=        1 nact=       13
+# Skipping this stress...
+     2054.500 0.00100 0.00000 0.00100   0.0     55. 0.00100 0.00100 -316.6  0.2887177E-03 #nullrev
+#plotloops 0.00100 -316.6      2054.500
+     2055.070 0.00100 0.01000 0.01100   0.0     55. 0.01100 0.00100 -316.6  0.2887177E-03 #Target
+ #getSwatl:   1.5618532       6927.1826       2055.0700000000002     
+#plotloops  0.00362  192.6      2055.070
+#plotloops  0.00362  192.6      2055.070
+#plotloops  0.00390  227.2      2055.070
+#plotloops  0.00416  252.0      2055.070
+#plotloops  0.00450  275.6      2055.070
+#plotloops  0.00508  305.0      2055.070
+#plotloops  0.00568  326.4      2055.070
+#plotloops  0.00646  347.6      2055.070
+#plotloops  0.00792  375.4      2055.070
+#plotloops  0.00900  390.5      2055.070
+#plotloops  0.00968  393.6      2055.070
+#plotloops  0.01100  398.7      2055.070
+ #plotloops #StrOut, StsOut=   1.09999999E-02   398.70483    
+#Warning: Same target as previous lobj90=ldo90  at nrev=        5 nblk=        1 nact=       15
+# Skipping this stress...
+     2061.500 0.00100 0.01000 0.01100   0.0     72. 0.01100 0.01100  398.7  0.5774353E-03 #nullrev
+#plotloops 0.01100  398.7      2061.500
+     2062.190 0.00100 0.00000 0.00100   0.0     72. 0.00100 0.01100  398.7  0.5774353E-03 #Target
+ #dbug:so90,de90ampl:    398.70483      5.00000082E-03
+ #getSwatl:   1.9935246       3853.9983       2062.1900000000001     
+#plotloops  0.00838 -110.5      2062.190
+#plotloops  0.00838 -110.5      2062.190
+#plotloops  0.00810 -145.1      2062.190
+#plotloops  0.00784 -169.9      2062.190
+#plotloops  0.00750 -193.5      2062.190
+#plotloops  0.00692 -222.9      2062.190
+#plotloops  0.00632 -244.3      2062.190
+#plotloops  0.00554 -265.5      2062.190
+#plotloops  0.00408 -293.3      2062.190
+#plotloops  0.00252 -314.5      2062.190
+#plotloops  0.00100 -330.1      2062.190
+# Max no. of History Reps. Reached: nblk=          2
+#TOTDAM90=  0.5774353E-03 allowed Repeats=     1731.8 nrev=         6
+#Last: nrev=          6 a=  0.5774353E-03   nblk=          2 nact=         17 nrecord=          0
+

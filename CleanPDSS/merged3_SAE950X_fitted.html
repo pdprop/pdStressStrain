@@ -1,0 +1,85 @@
+
+#<html><title>SAE Standard Fatigue Data File format</title><body>
+#<FORM METHOD="POST" ACTION="http://mme.uwaterloo.ca/cgi-bin/catgnume">
+#<DL compact> Pick one:
+#<input type="radio" name="#saeinput" value="FDE_plot" >FDE_plot
+#<input type="radio" name="#saeinput" value="FDE_fit"  checked >FDE_fit
+#<input type="submit" value="Send for processing">
+#<br><pre><textarea rows=50 cols=90 name="SAE_Standard_File" >
+#
+#Copyright (C) 2015  F.D.E. Committee
+#This data file is free software - you can redistribute it and/or
+#modify it under the terms of the GNU General Public License as
+#published by the Free Software Foundation; either version 2 of the
+#license, or (at your option) any later version.
+#This data file is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY - without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General PUblic License for more details.
+#You should have received a copy of the GNU General PUblic License
+#along with this program - if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+#Try also their web site: http://www.gnu.org/copyleft/gpl.html
+#
+# SAE950X 8mm and 10mm thick plates + QStE380 (SAE950XLK) 3mm sheet
+# See individual files for details:
+# Ref.1: P.Watson and T.H.Topper, "An Evaluation of the Fatigue Performance
+# of Automotive Steels," SAE Paper 710597, Montreal Que.,  Jun.7-11 1971
+# Ref.2: P.Dindinger report to Fat.Des.+Eval. Comm. 1995
+# Ref.3: L.DePrada, et al, "Fatigue Behaviour of High Strength Steel Sheets
+# Used in Automotive Industry," Fatigue 2007.
+# Data digitized from graphs and may contain errors.
+#saedigcurve_v2.2.f starts.
+#
+#FileType= strain_life
+#DataType= fitted
+#TIMEcol= 0
+#NAME=  SAE950X
+#NAME=  HSLA-345
+#NAME= QStE380  (possiby not a 950X)
+#NAME=  Steel
+#Stress_units= mpa
+#Strain_units= strain
+#Sy= 432   ave. of 345. (50ksi) 437.(63) 516. (74)
+#Su= 496   ave. of 441. 485. 562
+#eu=     0.14  (engineering strain at Su  from Watson)
+#E= 203000   ave. of204220.  204700 200100
+#FractureStrain= 1.01  ave. of 1.06  1.16
+#FractureStress=  751.
+#monotonic_K= 0  not reported
+#monotonic_n= 0  not reported
+#BHN= 140. 170.
+#%RA= 65. % 68.5
+#SAE950X    HSLA-345   BHN=  140 Fn=    0
+##         Monotonic Props.       Cyclic Props.
+#ELAS. MOD.= 29443. KSI,  203. GPA     K'        = 133.2 KSI,   918.MPA
+#YIELD,0.2%=    63. KSI,  432. MPA     N'        = 0.1451
+#ULT. STRG.=    72. KSI,  496. MPA     F. STRG COEF=  107.9 KSI,  744.MPA
+#K       =      0.0 KSI,      0. MPA   F.STRG EXP, b=-0.0724
+#N            = 0.0000                 FAT DUCT COEF=   0.2342
+#RED. IN AREA = 65.0                   F.DUCT EXP, c=-0.4990
+#T. FRAC. STG.= 108.9 KSI,  751. MPA   Exp Cyc Yld  =   54. Ksi, 373.MPA
+#T. FRAC. STR.= 1.010                  Fit Cyc Yld  =   51. Ksi, 350.MPA
+#No. fatigue data points=   56
+#
+# NOTE!! The Following Points are <b>FITTED DATA:</b>#NOTE!! Fitted Stress computed using Experm. K' and n'
+#Stress_Units= MPa
+#TotStrAmp   2Nf  StsAmp So PlsStr   IniMod NeubEqvStsAmpl
+1.01           1  751    0  1.006    203000 12409  #Fitted_point  monotonic
+0.01914      640  421.6  0  0.01707  203000  1280  #Fitted_point manually
+0.00968     2300  393.6  0  0.00774  203000   879  #Fitted_point  manually
+0.00739     4000  382.1  0  0.00551  203000   757  #Fitted_point  manually
+0.00532     8000  367.4  0  0.00351  203000   630  #Fitted_point  manually
+0.00424    15000  356.6  0  0.00249  203000   554  #Fitted_point  manually
+0.00346    24000  346    0  0.00176  203000   493  #Fitted_point  manually
+0.00273    50000  332.1  0  0.0011   203000   429  #Fitted_point  manually
+0.00234    80000  321.5  0  0.00076  203000   391  #Fitted_point  manually
+0.00204   164000  310.8  0  0.00051  203000   359  #Fitted_point  manually
+0.00175   400000  296.1  0  0.00029  203000   324  #Fitted_point  manually
+0.00158  1000000  284.3  0  0.00018  203000   302  #Fitted_point  manually
+0.00145  2400000  271.9  0  0.00011  203000   283  #Fitted_point  manually
+0.00131 15000000  254.6  0  0.00005  203000   260  #Fitted_point  manually
+0.00131 20000000  254.6  0  0.00005  203000   260  #Fitted_point  manually
+#</textarea>
+#</pre></DL></FORM></body></html>
+

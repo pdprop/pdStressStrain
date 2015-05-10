@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#Script to compile the Fortran programs
+# At the head of each listing is a description of the compile 
+# step, and usage.
+
+
+echo Compiling   pdStressStrain.f   ......................
+gfortran  -g -w -fbounds-check pdStressStrain.f  -o pdStressStrain
+
+echo Compiling   deltaEvents.f   ......................
+gfortran  -g -w -fbounds-check deltaEvents.f  -o deltaEvents
+
+echo Compiling   computeAreas.f   ......................
+gfortran  -g -w -fbounds-check computeAreas.f  -o computeAreas
+
+echo Compiling   delete1arg.f   ......................
+gfortran  -g -w -fbounds-check delete1arg.f  -o delete1arg
+
+exit
